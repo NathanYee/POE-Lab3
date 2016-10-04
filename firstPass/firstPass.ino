@@ -1,7 +1,9 @@
 // POE Lab 3 - A Line Following Robot
 
 const int irSensor = 0; // ir sensor pin
+byte input[256];
 int irValue;
+int ir_threshold = 950;
 
 void setup() {
   // put your setup code here, to run once:
@@ -16,6 +18,7 @@ void loop() {
   
   // print serial value
   Serial.println(irValue);
+  Serial.println(ir_threshold);
 }
 
 void irSensorRead()
@@ -33,5 +36,12 @@ void irSensorRead()
 
   // divide the value of irValue by 5 to find the average
 
-  irValue = irValue / 5;
+  irValue = irValue/5;
 }
+
+void serialEvent(){
+  // read 1 byte from serial
+  Serial.readBytes(input, 1);
+  ir_threshold = input[0];
+}
+
