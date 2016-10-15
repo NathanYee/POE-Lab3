@@ -4,37 +4,36 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
-#define leftSensor A5 // Left IR sensor
-#define rightSensor A4 // Right IR sensor
+#define leftSensor A2 // Left IR sensor
+#define rightSensor A3 // Right IR sensor
 
-byte input[256];
-int leftValue;
-int rightValue;
+byte input[256]; // Serial input buffer
+volatile int leftValue = 0; // Left IR Value
+volatile int rightValue = 0; // Right IR Value
 
 Adafruit_MotorShield ms = Adafruit_MotorShield();
 Adafruit_DCMotor *m1 = ms.getMotor(1); // leftMotor
 Adafruit_DCMotor *m2 = ms.getMotor(2); // rightMotor
-volatile int mainSpeed = 100;
-volatile int diffSpeed = 30;
-volatile int irThreshhold = 950;
+volatile int mainSpeed = 40; // The main speed for the motors
+volatile int diffSpeed = 40; // The difference in speed based on the irThreshhold
+volatile int irThreshhold = 800; // The threshhold for the floor vs the black tape
 
-void setup() {
-  // put your setup code here, to run once:
-  ms.begin();
-  m1->setSpeed(mainSpeed);
+void setup(){
+  ms.begin(); // Begins the motorshield
+  m1->setSpeed(mainSpeed); // Sets the main speed for both of the motors
   m2->setSpeed(mainSpeed);
-  m1->run(FORWARD);
+  m1->run(FORWARD); // Sets both of the motors to go forward
   m2->run(FORWARD);
-  Serial.begin(9600);
+  Serial.begin(9600); // Begins serial communication
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
-  // read irSensor valye
+  // read irSensor value
   irSensorRead();
 
-  if(leftValue < irThreshhold){
+  if(leftValue > irThreshhold){
     m1->setSpeed(mainSpeed);
     m2->setSpeed(mainSpeed - diffSpeed);
   }
@@ -46,6 +45,7 @@ void loop() {
     m1->setSpeed(mainSpeed);
     m2->setSpeed(mainSpeed);
   }
+  
 }
 
 void irSensorRead()
@@ -64,6 +64,9 @@ void irSensorRead()
   // divide the value of irValue by 5 to find the average
   leftValue = leftValue/5;
   rightValue = rightValue/5;
+
+  Serial.print(leftValue);
+  Serial.println(rightValue);
 }
 
 void serialEvent(){
