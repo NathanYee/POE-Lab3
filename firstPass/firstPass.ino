@@ -28,29 +28,40 @@ void setup(){
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
-  // read irSensor value
+  // read irSensor values
   irSensorRead();
 
   if(leftValue > irThreshhold){
+    // If the left sensor hits the tape, turn off the right motor
     m1->setSpeed(mainSpeed);
     m2->setSpeed(mainSpeed - diffSpeed);
+    Serial.print(mainSpeed);
+    Serial.print(mainSpeed - diffSpeed);
   }
   else if(rightValue > irThreshhold){
+    // If the right sensor hits the tape, turn off the left motor
     m1->setSpeed(mainSpeed - diffSpeed);
     m2->setSpeed(mainSpeed);
+    Serial.print(mainSpeed - diffSpeed);
+    Serial.print(mainSpeed);
   }
   else{
+    // Charge forward!
     m1->setSpeed(mainSpeed);
     m2->setSpeed(mainSpeed);
+    Serial.print(mainSpeed);
+    Serial.print(mainSpeed);
   }
   
 }
 
 void irSensorRead()
 {
-  // irSensorRead reads the sensor 5 times and returns the average
+  /*
+   * irSensorRead reads the sensor 5 times and returns the average
+   */
+
+  // Reset the values
   leftValue = 0;
   rightValue = 0;
 
